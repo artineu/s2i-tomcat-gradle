@@ -80,3 +80,9 @@ s2i build --incremental=true test/test-app nginx-centos7 nginx-app
 ---> Building and installing application from source...
 ```
 This will run the *save-artifacts* script which includes the custom code to backup the currently running application source, rebuild the application image, and then re-deploy the previously saved source using the *assemble* script.
+
+#### Test in OpenShift
+First load all the needed resources in a project
+```
+oc create -f https://raw.githubusercontent.com/artineu/s2i-tomcat-gradle/master/ose3/s2i-tomcat-gradle-imagestream.json
+```
