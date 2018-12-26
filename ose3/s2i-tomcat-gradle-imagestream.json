@@ -1,0 +1,26 @@
+{
+    "kind": "ImageStream",
+    "apiVersion": "v1",
+    "metadata": {
+       "name": "s2i-tomcat-gradle"
+    },
+    "spec": {
+       "tags": [
+          {
+             "name": "latest",
+             "annotations": {
+                "description": "Oracle Java Tomcat Gradle S2I image",
+                "iconClass": "icon-tomcat",
+                "tags": "builder,java,gradle,tomcat",
+                "supports": "java:8,gradle:5.0,Tomcat:8.5.37",
+                "sampleRepo": "https://github.com/artineu/gradle-sample-app.git",
+                "version": "latest"
+             },
+             "from": {
+                "kind": "DockerImage",
+                "name": "docker.io/artineu/s2i-tomcat-gradle:latest"
+             }
+          }
+       ]
+    }
+ }
