@@ -16,21 +16,19 @@ fi
 #
 if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
   echo "---> Restoring build artifacts..."
-  mv /tmp/artifacts/. ./$HOME/.
+  mv /tmp/artifacts/. $HOME/.
 fi
 
 echo "---> Moving  Application source..."
-cp -Rf /tmp/src/. $HOME/src
+cp -Rf /tmp/src/. $HOME
 
 
 echo "---> Building application from source..."
 # TODO: Add build steps for your application, eg npm install, bundle install, pip install, etc.
-pushd ${HOME}/src
-echo $PWD
 ./gradlew build
-cp `find . -type f -name '*.war'` /opt/tomcat/webapps/
-cd /opt/tomcat/webapps/
+cp `find . -type f -name '*.war'` ${APP_ROOT}/webapps/
+cd ${APP_ROOT}/webapps/
 fullname=`find . -type f -name '*.war'`
 basename=`basename $fullname`
 mv $basename app.war
-./gradlew clean all
+#./gradlew clean all
