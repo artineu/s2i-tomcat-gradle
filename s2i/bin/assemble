@@ -20,11 +20,13 @@ if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
 fi
 
 echo "---> Moving  Application source..."
-mv /tmp/s2i/src $HOME/src
+cp -Rf /tmp/src/. $HOME/src
+
 
 echo "---> Building application from source..."
 # TODO: Add build steps for your application, eg npm install, bundle install, pip install, etc.
 pushd ${HOME}/src
+echo $PWD
 ./gradlew build
 cp `find . -type f -name '*.war'` /opt/tomcat/webapps/
 cd /opt/tomcat/webapps/
