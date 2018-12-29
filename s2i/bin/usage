@@ -5,7 +5,7 @@ To use it, install S2I: https://github.com/openshift/source-to-image
 
 Sample invocation:
 
-s2i build <source code path/URL> tomcat-gradle <application image>
+s2i build <source code path/URL> s2-itomcat-gradle <application image>
 
 You can then run the resulting image via:
 docker run <application image>
