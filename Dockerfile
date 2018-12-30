@@ -70,7 +70,8 @@ ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 
 RUN chmod -R u+x /opt/app-root/bin && \
     chgrp -R 0 /opt/app-root && \
-    chmod -R g=u /opt/app-root /etc/passwd
+    chmod -R g=u /opt/app-root /etc/passwd && \
+    chown -R 1001:0 /opt/app-root
 
 WORKDIR ${HOME}
 USER 1001
