@@ -4,6 +4,13 @@ FROM openshift/base-centos7
 LABEL maintainer="Martin Handl <mhandl@artin.io>"
 ENV LANG en_US.UTF-8
 
+# Install bzip2, epel-release
+RUN INSTALL_PKGS="bzip2 epel-release" && \
+    yum install -y $INSTALL_PKGS && \
+    yum install -y nodejs && \
+    rpm -V $INSTALL_PKGS && \
+    yum clean all -y
+    
 # Install  Java
 RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3a%2F%2Fwww.oracle.com%2Ftechnetwork%2Fjava%2Fjavase%2Fdownloads%2Fjdk8-downloads-2133151.html; oraclelicense=accept-securebackup-cookie;" "https://download.oracle.com/otn-pub/java/jdk/8u191-b12/2787e4a523244c269598db4e85c51e0c/jdk-8u191-linux-x64.rpm" -O /tmp/jdk-8-linux-x64.rpm \
  && yum -y install /tmp/jdk-8-linux-x64.rpm \
