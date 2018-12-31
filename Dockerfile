@@ -1,15 +1,15 @@
-FROM openshift/base-centos7
+FROM  centos/s2i-base-centos7
 
 # TODO: Put the maintainer name in the image metadata
 LABEL maintainer="Martin Handl <mhandl@artin.io>"
 ENV LANG en_US.UTF-8
 
 # Install bzip2, epel-release
-RUN INSTALL_PKGS="bzip2 epel-release" && \
-    yum install -y $INSTALL_PKGS && \
-    yum install -y nodejs && \
-    rpm -V $INSTALL_PKGS && \
-    yum clean all -y
+#RUN INSTALL_PKGS="bzip2 epel-release" && \
+#    yum install -y $INSTALL_PKGS && \
+#    yum install -y nodejs && \
+#    rpm -V $INSTALL_PKGS && \
+#    yum clean all -y
     
 # Install  Java
 RUN wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3a%2F%2Fwww.oracle.com%2Ftechnetwork%2Fjava%2Fjavase%2Fdownloads%2Fjdk8-downloads-2133151.html; oraclelicense=accept-securebackup-cookie;" "https://download.oracle.com/otn-pub/java/jdk/8u191-b12/2787e4a523244c269598db4e85c51e0c/jdk-8u191-linux-x64.rpm" -O /tmp/jdk-8-linux-x64.rpm \
@@ -62,17 +62,23 @@ LABEL io.openshift.s2i.scripts-url="image:///usr/libexec/s2i" \
       name="s2i-tomcat-gradle ${BUILDER_VERSION}" \
       version="${BUILDER_VERSION}" 
 
-# TODO: Copy the S2I scripts to /usr/libexec/s2i, since openshift/base-centos7 image
-# sets io.openshift.s2i.scripts-url label that way, or update that label
-COPY ./s2i/bin/ /usr/libexec/s2i
+# Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH
+COPY ./s2i/bin/ $STI_SCRIPTS_PATH
 
-ENV JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+# Copy extra files to the image, including help file.
+COPY ./root/ /
 
-RUN chmod -R u+x /opt/app-root/bin && \
-    chgrp -R 0 /opt/app-root && \
-    chmod -R g=u /opt/app-root /etc/passwd && \
-    chown -R 1001:0 /opt/app-root
+# Drop the root user and make the content of /opt/app-root owned by user 1001
+RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
+    rpm-file-permissions
 
-WORKDIR ${HOME}
+#RUN chmod -R u+x /opt/app-root/bin && \
+#    chgrp -R 0 /opt/app-root && \
+#    chmod -R g=u /opt/app-root /etc/passwd && \
+#    chown -R 1001:0 /opt/app-root && \
+#    chmod -R g+w /opt/app-root
+
 USER 1001
 
+# Set the default CMD to print the usage of the language image
+CMD $STI_SCRIPTS_PATH/usage
