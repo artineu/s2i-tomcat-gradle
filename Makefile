@@ -1,4 +1,4 @@
-IMAGE_NAME = artineu/2i-tomcat-gradle
+IMAGE_NAME = artineu/s2i-tomcat-gradle
 
 .PHONY: build
 build:

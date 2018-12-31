@@ -53,14 +53,35 @@ RUN  curl -fSL "${TOMCAT_TGZ_URL}" -o /tmp/tomcat.tar.gz \
   && curl -fsL "${MSSQL_JDBC_DRIVER_DOWNLOAD_URL}" -o ${CATALINA_HOME}/lib/mssql-jdbc-7.0.0.jre10.jar \
   && echo "Tomcat install successful!"
 
+
+# install nodej & npm
+ENV NODEJS_VERSION=8 \
+    NPM_RUN=start \
+    NS_NAME=nodejs \
+    NPM_CONFIG_PREFIX=$HOME/.npm-global \
+    PATH=$HOME/node_modules/.bin/:$HOME/.npm-global/bin/:/opt/rh/rh-nodejs8/root/usr/bin:$PATH
+
+RUN yum install -y centos-release-scl-rh && \
+    ( [ "rh-${NS_NAME}${NODEJS_VERSION}" != "${NODEJS_SCL}" ] && yum remove -y ${NODEJS_SCL}\* || : ) && \
+    INSTALL_PKGS="rh-nodejs8 rh-nodejs8-npm rh-nodejs8-nodejs-nodemon nss_wrapper" && \
+    ln -s /usr/lib/node_modules/nodemon/bin/nodemon.js /usr/bin/nodemon && \
+    yum install -y --setopt=tsflags=nodocs $INSTALL_PKGS && \
+    rpm -V $INSTALL_PKGS && \
+    yum clean all -y
+   
+
+
 # TODO: Set labels used in OpenShift to describe the builder image
 ENV BUILDER_VERSION 1.0
 LABEL io.openshift.s2i.scripts-url="image:///usr/libexec/s2i" \
+      io.s2i.scripts-url="image:///usr/libexec/s2i" \
       io.k8s.display-name="s2i-tomcat-gradle ${BUILDER_VERSION}" \
       io.openshift.expose-services="8080:http" \
       io.openshift.tags="java,builder,tomcat,gradle" \
-      name="s2i-tomcat-gradle ${BUILDER_VERSION}" \
-      version="${BUILDER_VERSION}" 
+      name="artineu/s2i-tomcat-gradle ${BUILDER_VERSION}" \
+      version="${BUILDER_VERSION}"  \
+      maintainer="Martin Handl <mhandl@artin.io>" \
+      usage="s2i build <SOURCE-REPOSITORY> artineu/s2i-tomcat-gradle:latest <APP-NAME>"
 
 # Copy the S2I scripts from the specific language image to $STI_SCRIPTS_PATH
 COPY ./s2i/bin/ $STI_SCRIPTS_PATH
@@ -77,6 +98,8 @@ RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT} && \
 #    chmod -R g=u /opt/app-root /etc/passwd && \
 #    chown -R 1001:0 /opt/app-root && \
 #    chmod -R g+w /opt/app-root
+
+EXPOSE 8080
 
 USER 1001
 
