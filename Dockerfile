@@ -78,6 +78,7 @@ LABEL io.openshift.s2i.scripts-url="image:///usr/libexec/s2i" \
       io.k8s.display-name="s2i-tomcat-gradle ${BUILDER_VERSION}" \
       io.openshift.expose-services="8080:http" \
       io.openshift.tags="java,builder,tomcat,gradle" \
+      io.openshift.wants="mysql"\
       name="artineu/s2i-tomcat-gradle ${BUILDER_VERSION}" \
       version="${BUILDER_VERSION}"  \
       maintainer="Martin Handl <mhandl@artin.io>" \
